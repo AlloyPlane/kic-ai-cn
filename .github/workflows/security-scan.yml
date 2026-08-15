@@ -1,0 +1,33 @@
+# ============================================================
+# 任务名：security-scan（在仓库 Actions 页面可以看到它）
+#
+# 这个文件是"自动任务清单"：
+#   每当有人往 main 分支推送代码、或有人提 PR 时，
+#   GitHub 会免费在它的服务器上自动跑一遍安全扫描。
+#   扫出问题 → 检查标红 → 阻止把密钥/危险代码合进仓库。
+#
+# 你什么都不用配置（公开仓库的 Actions 免费）。
+# ============================================================
+name: security-scan
+
+on:                       # ← "什么时候触发"
+  push:                   #   有人推送代码时
+    branches: [ main ]
+  pull_request:           #   有人提 PR 时
+    branches: [ main ]
+
+jobs:
+  scan:                   # ← "干一件什么事"
+    runs-on: ubuntu-latest  # 在 GitHub 的免费服务器上跑
+    steps:                # ← "分几步"
+      - name: 拉取代码
+        uses: actions/checkout@v4   # 第1步：把仓库代码下载下来
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5  # 第2步：准备运行环境
+        with:
+          python-version: "3.11"
+
+      - name: 运行安全扫描   # 第3步：执行和本机一模一样的扫描
+        run: |
+          python scripts/check-secrets.py

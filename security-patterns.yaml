@@ -1,0 +1,79 @@
+# ============================================================
+# security-patterns.yaml — kic-ai-cn 安全规则库（Qoder/CodeSec 风格）
+# 规则 schema：ruleName / substrings | regex / paths / exclude_paths
+#              / path_glob / severity(HIGH|MEDIUM|LOW) / reminder
+# 用法：scripts/check-secrets.py 读取本文件执行扫描
+# ============================================================
+
+- ruleName: sk-api-key
+  regex: "sk-[A-Za-z0-9]{20,}"
+  severity: HIGH
+  reminder: "发现疑似 API 密钥（sk- 开头）。密钥应放环境变量/密钥管理，严禁提交！"
+
+- ruleName: github-pat
+  regex: "ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}"
+  severity: HIGH
+  reminder: "发现 GitHub Personal Access Token，请立即吊销并改用环境变量。"
+
+- ruleName: aws-access-key
+  regex: "AKIA[0-9A-Z]{16}"
+  severity: HIGH
+  reminder: "发现 AWS Access Key，请立即吊销，改用 IAM 角色/环境变量。"
+
+- ruleName: google-api-key
+  regex: "AIza[0-9A-Za-z_-]{30,}"
+  severity: HIGH
+  reminder: "发现 Google API Key，请吊销并改用 Secret Manager。"
+
+- ruleName: slack-token
+  regex: "xox[baprs]-[A-Za-z0-9-]{20,}"
+  severity: HIGH
+  reminder: "发现 Slack Token，请吊销。"
+
+- ruleName: private-key
+  regex: "-----BEGIN [A-Z ]+ PRIVATE KEY-----"
+  severity: HIGH
+  reminder: "发现私钥！私钥严禁入库，请移除并改用密钥管理。"
+
+- ruleName: jwt-in-code
+  regex: "eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+  severity: MEDIUM
+  reminder: "代码中出现 JWT（可能含敏感声明），请确认来源与用途。"
+
+- ruleName: hardcoded-api-key
+  regex: "api[_-]?key\s*[:=]\s*[\"'][A-Za-z0-9]{16,}[\"']"
+  severity: HIGH
+  exclude_paths: ["scripts/", "security-patterns.yaml", ".github/"]
+  reminder: "代码里直接写了 API Key 值，请改为从环境变量读取。"
+
+- ruleName: hardcoded-password
+  regex: "password\s*[:=]\s*[\"'][^\"']{4,}[\"']"
+  severity: MEDIUM
+  exclude_paths: ["scripts/", "security-patterns.yaml", ".github/"]
+  reminder: "代码里硬编码了密码，请使用环境变量或密钥管理。"
+
+- ruleName: sql-fstring
+  regex: "cursor\.execute\(\s*f[\"']"
+  severity: HIGH
+  reminder: "用 f-string 拼接 SQL 有注入风险，请改用参数化查询。"
+
+- ruleName: eval-in-code
+  substrings: ["eval("]
+  severity: MEDIUM
+  exclude_paths: ["scripts/"]
+  reminder: "eval() 有代码注入风险，请改用 ast.literal_eval() 或安全解析。"
+
+- ruleName: unsafe-yaml-load
+  substrings: ["yaml.load("]
+  severity: MEDIUM
+  reminder: "yaml.load() 不安全，请使用 yaml.safe_load()。"
+
+- ruleName: shell-true
+  regex: "subprocess\.(run|Popen|call)\([^)]*shell\s*=\s*True"
+  severity: MEDIUM
+  reminder: "shell=True 有命令注入风险，请传参数列表并避免 shell。"
+
+- ruleName: os-system
+  substrings: ["os.system("]
+  severity: LOW
+  reminder: "os.system() 建议用 subprocess.run() 替代（注意注入风险）。"
