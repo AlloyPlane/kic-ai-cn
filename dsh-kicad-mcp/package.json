@@ -1,0 +1,27 @@
+{
+  "name": "dsh-kicad-mcp",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness 插件：把 KiCad MCP 服务器（KiCAD-MCP-Server / Konnect）注册为 agent 工具",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["lib"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deepseek-ai/deepseek-harness.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-mcp-client": ">=0.0.1-rc.1 <1.0.0",
+    "@deepseek-ai/dsh-tools": ">=0.0.1-rc.1 <1.0.0",
+    "@deepseek-ai/schemastery": "^3.18.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

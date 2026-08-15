@@ -1,0 +1,12 @@
+# node
+node_modules/
+lib/
+dist/
+*.tsbuildinfo
+
+# 系统
+Thumbs.db
+.DS_Store
+
+# 配置（含本机路径）
+*.local.json
