@@ -95,6 +95,21 @@ Harness 是插件化的（Cordis 架构），生态参与点：
 
 ---
 
+## 🔐 安全防线（三层，Qoder/CodeSec 风格）
+
+- **L1 规则扫描**：`security-patterns.yaml` 规则库（密钥/AWS/私钥/SQL注入/eval 等 14 条，可自定义）+ `scripts/check-secrets.py`
+  - 本机：pre-commit 钩子自动拦（提交前扫暂存区）
+  - 云端：GitHub Actions（`.github/workflows/security-scan.yml`）push/PR 自动跑，命中标红
+- **L2/L3 LLM 审查**：`scripts/security-review.py` 用 DeepSeek 对 diff / commit 范围 / 全仓库做一轮"安全工程师"式审查（输出严重级别+修复建议）
+  ```bash
+  python scripts/security-review.py --diff          # L2: 未提交改动
+  python scripts/security-review.py --commits A..B  # L3: 提交范围
+  python scripts/security-review.py --all           # L3: 全仓库采样
+  ```
+  API Key 自动读取：`DEEPSEEK_API_KEY` 环境变量 或 `~/.kic-ai/config.json`
+- 想加规则？往 `security-patterns.yaml` 加一条即生效（改完不用装任何东西）
+
+
 ## 📜 许可与致谢
 
 - **MIT License**（保留原作者 Jochem © 2025 版权声明；本增强分支版权归贡献者所有）
