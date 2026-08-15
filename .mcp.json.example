@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "kicad": {
+      "command": "node",
+      "args": ["D:\\kicad\\KiCAD-MCP-Server\\dist\\index.js"],
+      "env": {
+        "KICAD_PYTHON": "D:\\kicad\\bin\\python.exe",
+        "PYTHONPATH": "D:\\kicad\\KiCAD-MCP-Server\\python"
+      }
+    }
+  }
+}
