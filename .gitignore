@@ -1,12 +1,28 @@
-# node
+# 构建产物
 node_modules/
 lib/
 dist/
 *.tsbuildinfo
 
+# 密钥/证书/凭据（绝不提交）
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.secret
+secrets/
+credentials.json
+*.local.json
+
+# KiC-AI 配置（含 API Key）
+.kic-ai/
+kic-ai-config.json
+~/.kic-ai/
+
 # 系统
 Thumbs.db
 .DS_Store
-
-# 配置（含本机路径）
-*.local.json
+*.log
