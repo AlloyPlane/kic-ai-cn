@@ -30,3 +30,4 @@ Thumbs.db
 # Python
 __pycache__/
 *.pyc
+`ndocs/overview.html  # 本地示意页，不入库
