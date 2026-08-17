@@ -9,6 +9,15 @@ python qodsec.py install     # 安装全局钩子（core.hooksPath → ~/.qodsec
 ```
 
 ## 使用 / Usage
+
+运行 `review` 时会出现模式菜单：
+```
+qodsec 安全审查模式:
+  [1] 用当前使用的模型 (deepseek-v4-pro)   ← 自动读你正在用的模型，回车即用
+  [2] 自定义模型（填 API 地址 / Key / 模型名） ← 现场填三要素
+```
+选 1 免填直接用；选 2 输入 API 地址 / API Key / 模型名。
+`qodsec config` 可把自定义三要素存到 `~/.qodsec/config.json`，之后免填。
 ```bash
 python qodsec.py scan              # 扫描当前仓库（提交钩子自动调用）
 python qodsec.py scan --staged     # 只扫暂存区
