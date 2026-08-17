@@ -1,17 +1,17 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""qodsec — Qoder 式 Git 安全上传防护插件（L1 规则扫描 + L2/L3 LLM 审查）
+"""gitguard — Git 安全上传防护插件（灵感来自 Qoder）（L1 规则扫描 + L2/L3 LLM 审查）
 
 用法:
-  python qodsec.py install       安装全局钩子（本机所有 git 仓库生效）
-  python qodsec.py uninstall     卸载全局钩子
-  python qodsec.py status        查看钩子/规则状态
-  python qodsec.py scan [--staged]   扫描当前仓库（默认全库，--staged 只扫暂存区）
-  python qodsec.py review [--diff|--commits A..B|--all] [--provider X]  LLM 安全审查
+  python gitguard.py install       安装全局钩子（本机所有 git 仓库生效）
+  python gitguard.py uninstall     卸载全局钩子
+  python gitguard.py status        查看钩子/规则状态
+  python gitguard.py scan [--staged]   扫描当前仓库（默认全库，--staged 只扫暂存区）
+  python gitguard.py review [--diff|--commits A..B|--all] [--provider X]  LLM 安全审查
 """
 import argparse, fnmatch, json, os, re, shutil, subprocess, sys, urllib.request
 
-HOME = os.path.join(os.path.expanduser('~'), '.qodsec')
+HOME = os.path.join(os.path.expanduser('~'), '.gitguard')
 RULES = os.path.join(HOME, 'security-patterns.yaml')
 QSEC_CONFIG = os.path.join(HOME, 'config.json')
 EXCLUDE = ['node_modules/', 'dist/', 'lib/', 'build/', '.next/', '.git/', '__pycache__/', '.venv/', 'target/']
@@ -108,21 +108,21 @@ def do_scan(staged=False):
 
 def _hook_script(staged):
     q = chr(34)
-    py = os.path.join(HOME, 'qodsec.py').replace(BS, '/')
+    py = os.path.join(HOME, 'gitguard.py').replace(BS, '/')
     arg = 'scan --staged' if staged else 'scan'
-    return ('#!/bin/sh\n# qodsec auto scan\n'
+    return ('#!/bin/sh\n# gitguard auto scan\n'
             'if command -v python >/dev/null 2>&1; then PY=python; elif command -v python3 >/dev/null 2>&1; then PY=python3; else exit 0; fi\n'
             + q + '$PY' + q + ' ' + q + py + q + ' ' + arg + '\n'
-            'rc=$?\nif [ $rc -ne 0 ]; then echo ' + q + '✋ qodsec: 检测到风险，已阻止！' + q + ' >&2; exit 1; fi\nexit 0\n')
+            'rc=$?\nif [ $rc -ne 0 ]; then echo ' + q + '✋ gitguard: 检测到风险，已阻止！' + q + ' >&2; exit 1; fi\nexit 0\n')
 
 def do_install(here):
     os.makedirs(HOME, exist_ok=True)
     shutil.copy2(os.path.join(here, 'security-patterns.yaml'), RULES)
-    shutil.copy2(os.path.join(here, 'qodsec.py'), os.path.join(HOME, 'qodsec.py'))
+    shutil.copy2(os.path.join(here, 'gitguard.py'), os.path.join(HOME, 'gitguard.py'))
     open(os.path.join(HOME, 'pre-commit'), 'w', encoding='utf-8', newline='\n').write(_hook_script(True))
     open(os.path.join(HOME, 'pre-push'), 'w', encoding='utf-8', newline='\n').write(_hook_script(False))
     subprocess.run(['git', 'config', '--global', 'core.hooksPath', HOME.replace(BS, '/')])
-    print('✅ qodsec 已安装 → ' + HOME)
+    print('✅ gitguard 已安装 → ' + HOME)
     print('   全局钩子: ' + subprocess.run(['git', 'config', '--global', 'core.hooksPath'], capture_output=True, text=True).stdout.strip())
     print('   规则条数: ' + str(len(load_rules(open(RULES, encoding='utf-8').read()))))
     return 0
@@ -130,13 +130,13 @@ def do_install(here):
 def do_uninstall():
     subprocess.run(['git', 'config', '--global', '--unset', 'core.hooksPath'])
     if os.path.isdir(HOME): shutil.rmtree(HOME)
-    print('✅ qodsec 已卸载（全局钩子已移除）')
+    print('✅ gitguard 已卸载（全局钩子已移除）')
     return 0
 
 def do_status():
     hp = subprocess.run(['git', 'config', '--global', 'core.hooksPath'], capture_output=True, text=True).stdout.strip()
     print('全局 hooksPath: ' + (hp or '(未设置)'))
-    print('qodsec 目录: ' + HOME + ('  存在' if os.path.isdir(HOME) else '  不存在'))
+    print('gitguard 目录: ' + HOME + ('  存在' if os.path.isdir(HOME) else '  不存在'))
     if os.path.exists(RULES): print('规则条数: ' + str(len(load_rules(open(RULES, encoding='utf-8').read()))))
     return 0
 
@@ -180,18 +180,18 @@ def _choose_mode(args):
     cur_model = model if has_current else '(未配置)'
     if not getattr(args, 'ask', False) and not sys.stdin.isatty():
         return prov, base, model, key  # 非交互：直接用已解析配置
-    print('\nqodsec 安全审查模式:')
+    print('\ngitguard 安全审查模式:')
     print('  [1] 用当前使用的模型 (' + cur_model + ')')
     print('  [2] 自定义模型（填 API 地址 / Key / 模型名）')
     choice = input('选择 (1/2' + (', 回车=1' if has_current else '') + '): ').strip()
     if choice == '2':
         return _ask_three()
     if not has_current:
-        print('✋ 当前无可用配置，请选 2 自定义或先运行 qodsec config'); return '', '', '', ''
+        print('✋ 当前无可用配置，请选 2 自定义或先运行 gitguard config'); return '', '', '', ''
     return prov, base, model, key
 
 def do_config():
-    """保存自定义三要素到 ~/.qodsec/config.json，以后免填。"""
+    """保存自定义三要素到 ~/.gitguard/config.json，以后免填。"""
     prov, base, model, key = _ask_three()
     data = {'provider': prov, 'api_base': base, 'api_key': key, 'model': model}
     os.makedirs(HOME, exist_ok=True)
@@ -241,7 +241,7 @@ def do_review(args):
     return 0
 
 def main():
-    ap = argparse.ArgumentParser(prog='qodsec', description='Qoder 式 Git 安全上传防护插件')
+    ap = argparse.ArgumentParser(prog='gitguard', description='Git 安全上传防护插件（灵感来自 Qoder）')
     sub = ap.add_subparsers(dest='cmd')
     sub.add_parser('install'); sub.add_parser('uninstall'); sub.add_parser('status')
     sub.add_parser('config', help='保存自定义模型三要素（API 地址/Key/模型）')
@@ -263,4 +263,4 @@ def main():
 
 if __name__ == '__main__':
     try: sys.exit(main())
-    except Exception as e: print('✋ qodsec 异常: ' + str(e)); sys.exit(1)
+    except Exception as e: print('✋ gitguard 异常: ' + str(e)); sys.exit(1)

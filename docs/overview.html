@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kic-ai-cn — 项目示意</title>
+<style>
+  :root{
+    --bg:#0b0f1a; --bg2:#111728; --card:#151d33; --line:#232f4e;
+    --txt:#e8eefc; --dim:#8b9bc0; --acc:#4f8cff; --acc2:#7c5cff;
+    --green:#3ddc97; --yellow:#ffd166; --red:#ff6b6b;
+    --mono:ui-monospace,Consolas,'Courier New',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1200px 600px at 70% -10%,#1a2340 0%,var(--bg) 55%);color:var(--txt);
+    font-family:'Segoe UI','Microsoft YaHei',system-ui,sans-serif;line-height:1.6;padding-bottom:80px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header{padding:56px 0 24px;text-align:center}
+  .tag{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--acc);border:1px solid var(--line);
+    border-radius:99px;padding:4px 14px;margin-bottom:16px;background:#0d1530}
+  h1{font-size:40px;background:linear-gradient(90deg,#9cc0ff,#c9aaff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--dim);margin-top:10px;font-size:15px}
+  .links{margin-top:16px;font-size:13px}
+  .links a{color:var(--acc);text-decoration:none;margin:0 8px}
+  .links a:hover{text-decoration:underline}
+  h2{font-size:22px;margin:48px 0 18px;display:flex;align-items:center;gap:10px}
+  h2 .n{background:linear-gradient(135deg,var(--acc),var(--acc2));width:30px;height:30px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#fff;flex:none}
+  .card{background:linear-gradient(180deg,#16203a,#121a30);border:1px solid var(--line);border-radius:14px;padding:20px}
+  /* 架构图 */
+  .flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;justify-content:center}
+  .node{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .node .ic{font-size:26px}
+  .node .tt{font-weight:600;margin-top:6px}
+  .node .de{font-size:12px;color:var(--dim);margin-top:4px}
+  .node.acc{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+  .arrow{align-self:center;color:var(--dim);font-size:20px;padding:0 2px}
+  /* 特性卡 */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .feat .ic{font-size:24px}
+  .feat .tt{font-weight:600;margin-top:8px}
+  .feat .de{font-size:13px;color:var(--dim);margin-top:6px}
+  .feat:hover{border-color:var(--acc);transform:translateY(-2px);transition:.2s}
+  /* 安全层 */
+  .sec{position:relative;border:1px solid var(--line);border-radius:12px;padding:16px 16px 16px 56px;margin-bottom:12px;background:#111a30;overflow:hidden}
+  .sec .lv{position:absolute;left:0;top:0;bottom:0;width:44px;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;letter-spacing:1px}
+  .sec.l1 .lv{background:rgba(77,140,255,.15);color:var(--acc)}
+  .sec.l2 .lv{background:rgba(255,209,102,.12);color:var(--yellow)}
+  .sec.l3 .lv{background:rgba(124,92,255,.15);color:var(--acc2)}
+  .sec .tt{font-weight:600}
+  .sec .de{font-size:13px;color:var(--dim);margin-top:4px}
+  .scanline{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);
+    animation:scan 2.4s ease-in-out infinite;opacity:.8}
+  @keyframes scan{0%{top:-4px}55%{top:100%}100%{top:100%}}
+  /* 时间线 */
+  .tl{position:relative;padding-left:24px}
+  .tl::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tl .it{position:relative;margin-bottom:16px}
+  .tl .it::before{content:'';position:absolute;left:-23px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+  .tl .tm{font-size:12px;color:var(--dim);font-family:var(--mono)}
+  .tl .tx{font-size:14px}
+  .ok{color:var(--green)} .warn{color:var(--yellow)} .err{color:var(--red)}
+  footer{margin-top:60px;text-align:center;color:var(--dim);font-size:13px}
+  .pill{display:inline-block;font-size:11px;border-radius:99px;padding:2px 10px;margin:2px;border:1px solid var(--line)}
+  .pill.g{color:var(--green);border-color:rgba(61,220,151,.4)}
+  .pill.b{color:var(--acc);border-color:rgba(79,140,255,.4)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="tag">PROJECT OVERVIEW · 项目示意</div>
+    <h1>kic-ai-cn</h1>
+    <div class="sub">KiCad AI 全家桶：中文增强插件 · Harness 网关 · 生态插件 · 三层安全防线</div>
+    <div class="links">
+      <a href="https://github.com/AlloyPlane/kic-ai-cn" target="_blank">GitHub 仓库 ↗</a>
+      <a href="#arch">架构</a><a href="#feat">特性</a><a href="#sec">安全</a><a href="#tl">历程</a>
+    </div>
+  </header>
+
+  <h2 id="arch"><span class="n">1</span>整体架构</h2>
+  <div class="card">
+    <div class="flow">
+      <div class="node"><div class="ic">🧑‍💻</div><div class="tt">你（用户）</div><div class="de">本 GUI / Claude Code / KiCad 插件</div></div>
+      <div class="arrow">→</div>
+      <div class="node acc"><div class="ic">🤖</div><div class="tt">AI 层</div><div class="de">DeepSeek Harness · Claude · 大模型</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="ic">🔌</div><div class="tt">MCP 桥</div><div class="de">kicad-gateway.mjs · dsh-mcp-client</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="ic">📐</div><div class="tt">KiCad 10</div><div class="de">建工程 · 原理图 · DRC · Gerber</div></div>
+    </div>
+    <div style="text-align:center;color:var(--dim);font-size:13px;margin-top:14px">
+      插件增强：<span class="pill b">云端 API</span><span class="pill b">中文界面</span><span class="pill b">联网搜索</span>
+      &nbsp;·&nbsp; 已实测：建工程 ✅ DRC ✅ 网关连通 ✅
+    </div>
+  </div>
+
+  <h2 id="feat"><span class="n">2</span>插件增强（KiC-AI CN）</h2>
+  <div class="grid">
+    <div class="feat"><div class="ic">🌐</div><div class="tt">云端大模型 API</div><div class="de">DeepSeek / OpenAI / 智谱 / 通义 / MiniMax / 自定义；无 Key 自动回退 Ollama</div></div>
+    <div class="feat"><div class="ic">🇨🇳</div><div class="tt">中文界面</div><div class="de">中文为主 + 中英一键切换，英文原文保留对照</div></div>
+    <div class="feat"><div class="ic">🔎</div><div class="tt">联网搜索</div><div class="de">DeepSeek 原生搜索，关键词自动触发 + 🌐 手动按钮，结果注入回答</div></div>
+    <div class="feat"><div class="ic">🛠️</div><div class="tt">稳定性修复</div><div class="de">配置窗口滚动兼容 wxPython 4.2（SetupScrolling 缺失修复）</div></div>
+  </div>
+
+  <h2 id="sec"><span class="n">3</span>三层安全防线（Qoder / CodeSec 风格）</h2>
+  <div class="sec l1">
+    <div class="scanline"></div>
+    <div class="lv">L1</div>
+    <div class="tt">规则扫描 · 实时拦截</div>
+    <div class="de">security-patterns.yaml（14 条规则：密钥/AWS/私钥/SQL注入/eval 等）→ 本机 pre-commit 钩子 + GitHub Actions CI（push/PR 自动）<br>
+    <span class="ok">实测：假密钥 sk-xxx 被精准拦截 ✅</span></div>
+  </div>
+  <div class="sec l2">
+    <div class="lv">L2</div>
+    <div class="tt">LLM 轻量审查 · diff</div>
+    <div class="de">security-review.py --diff / --staged：DeepSeek 对未提交改动做"安全工程师"式审查</div>
+  </div>
+  <div class="sec l3">
+    <div class="lv">L3</div>
+    <div class="tt">LLM 深度审查 · commit 范围 / 全仓库</div>
+    <div class="de">security-review.py --commits A..B / --all<br>
+    <span class="ok">实测：审查真实提交 → 6 条 LOW 建议 + "未发现明显安全问题" ✅</span></div>
+  </div>
+
+  <h2 id="tl"><span class="n">4</span>项目历程</h2>
+  <div class="card">
+    <div class="tl">
+      <div class="it"><div class="tm">第 1 步</div><div class="tx">问"有没有 AI 打板插件" → 调研 + 推荐</div></div>
+      <div class="it"><div class="tm">第 2 步</div><div class="tx">克隆 4 个项目到 D:\kicad，KiCad 10.0.5 就绪</div></div>
+      <div class="it"><div class="tm">第 3 步</div><div class="tx">编译 2 个 MCP Server（221/100 工具）✅ 冒烟测试通过</div></div>
+      <div class="it"><div class="tm">第 4 步</div><div class="tx">深度改造 KiC-AI：云端 API + 中文界面 + 联网搜索 + 滚动修复</div></div>
+      <div class="it"><div class="tm">第 5 步</div><div class="tx">Harness 网关接管 KiCad：建工程 + DRC 实测跑通</div></div>
+      <div class="it"><div class="tm">第 6 步</div><div class="tx"><span class="ok">开源上线 github.com/AlloyPlane/kic-ai-cn ✅</span></div></div>
+      <div class="it"><div class="tm">第 7 步</div><div class="tx">三层安全防线（Qoder 式）：L1 规则 CI + L2/L3 LLM 审查，全部实测</div></div>
+      <div class="it"><div class="tm">下一步</div><div class="tx"><span class="warn">ESP32-S3 手表板 · dsh-kicad-mcp 提 PR · npm 发布</span></div></div>
+    </div>
+  </div>
+
+  <footer>
+    kic-ai-cn · MIT License · 基于 jochemkroon/KiC-AI 增强 · 由 DeepSeek Harness 会话协作完成
+  </footer>
+</div>
+</body>
+</html>
